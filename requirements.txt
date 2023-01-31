@@ -1,0 +1,7 @@
+imgaug==0.4.0
+bson==0.5.10
+boto3==1.24.*
+GitPython==3.1.27
+sagemaker==2.99.0
+toolz==0.12.0
+# sagemaker_wrapper==0.0.25
