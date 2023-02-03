@@ -1,187 +1,71 @@
+import numpy as np
+
+
 class FairnessMethods(object):
     @staticmethod
-    def demographic_parity(predictions, sensitive_feature):
-        """
-        Calculates demographic parity for a given set of predictions and a sensitive feature.
+    def calculate_val_score(predictions: np.array, ratings: np.array, disadvantaged_group: np.array,
+                            advantaged_group: np.array, number_of_items: int):
+        e_g_r, e_g_y, e_neg_g_r, e_neg_g_y = FairnessMethods.calculate_average_values(advantaged_group,
+                                                                                      disadvantaged_group,
+                                                                                      number_of_items, predictions,
+                                                                                      ratings)
 
-        predictions: a list of (user_id, item_id, rating, prediction) tuples
-        sensitive_feature: the name of the sensitive feature (e.g. "gender")
-
-        returns: demographic parity as a float
-        """
-        # Count the total number of predictions
-        total_count = len(predictions)
-
-        # Count the number of predictions for each value of the sensitive feature
-        feature_counts = {}
-        for _, _, _, prediction in predictions:
-            feature_value = prediction[sensitive_feature]
-            if feature_value not in feature_counts:
-                feature_counts[feature_value] = 0
-            feature_counts[feature_value] += 1
-
-        # Calculate demographic parity
-        disparities = []
-        for feature_value, count in feature_counts.items():
-            disparities.append(abs(count / total_count - 0.5))
-        return max(disparities)
+        return np.mean(np.abs((e_g_y - e_g_r) - (e_neg_g_y - e_neg_g_r)))
 
     @staticmethod
-    def equal_opportunity(predictions, sensitive_feature, outcome_feature):
-        """
-        Calculates equal opportunity for a given set of predictions, a sensitive feature, and an outcome feature.
+    def calculate_abs_score(predictions: np.array, ratings: np.array, disadvantaged_group: np.array,
+                            advantaged_group: np.array, number_of_items: int):
+        e_g_r, e_g_y, e_neg_g_r, e_neg_g_y = FairnessMethods.calculate_average_values(advantaged_group,
+                                                                                      disadvantaged_group,
+                                                                                      number_of_items, predictions,
+                                                                                      ratings)
 
-        predictions: a list of (user_id, item_id, rating, prediction) tuples
-        sensitive_feature: the name of the sensitive feature (e.g. "gender")
-        outcome_feature: the name of the outcome feature (e.g. "rating")
-
-        returns: equal opportunity as a float
-        """
-        # Count the number of predictions for each value of the sensitive feature
-        feature_counts = {}
-        for _, _, _, prediction in predictions:
-            feature_value = prediction[sensitive_feature]
-            if feature_value not in feature_counts:
-                feature_counts[feature_value] = 0
-            feature_counts[feature_value] += 1
-
-        # Count the number of positive outcomes for each value of the sensitive feature
-        positive_counts = {}
-        for _, _, rating, prediction in predictions:
-            feature_value = prediction[sensitive_feature]
-            if rating == 1 and feature_value not in positive_counts:
-                positive_counts[feature_value] = 0
-            if rating == 1:
-                positive_counts[feature_value] += 1
-        # Calculate the proportion of positive outcomes for each value of the sensitive feature
-        proportions = {}
-        for feature_value, count in positive_counts.items():
-            proportions[feature_value] = count / feature_counts[feature_value]
-
-        # Calculate the disparity for each value of the sensitive feature
-        disparities = []
-        for feature_value, count in feature_counts.items():
-            disparities.append(abs(proportions[feature_value] - proportions[next(iter(feature_counts))]))
-
-        # Return the maximum disparity
-        return max(disparities)
+        return np.mean(np.abs(e_g_y - e_g_r) - np.abs(e_neg_g_y - e_neg_g_r))
 
     @staticmethod
-    def absolute_unfairness(predictions, sensitive_feature, outcome_feature):
-        """
-        Calculates absolute unfairness for a given set of predictions, a sensitive feature, and an outcome feature.
+    def calculate_under_score(predictions: np.array, ratings: np.array, disadvantaged_group: np.array,
+                              advantaged_group: np.array, number_of_items: int):
+        e_g_r, e_g_y, e_neg_g_r, e_neg_g_y = FairnessMethods.calculate_average_values(advantaged_group,
+                                                                                      disadvantaged_group,
+                                                                                      number_of_items, predictions,
+                                                                                      ratings)
 
-        predictions: a list of (user_id, item_id, rating, prediction) tuples
-        sensitive_feature: the name of the sensitive feature (e.g. "gender")
-        outcome_feature: the name of the outcome feature (e.g. "rating")
-
-        returns: absolute unfairness as a float
-        """
-        # Count the number of predictions for each value of the sensitive feature
-        feature_counts = {}
-        for _, _, _, prediction in predictions:
-            feature_value = prediction[sensitive_feature]
-            if feature_value not in feature_counts:
-                feature_counts[feature_value] = 0
-            feature_counts[feature_value] += 1
-
-        # Count the number of positive outcomes for each value of the sensitive feature
-        positive_counts = {}
-        for _, _, rating, prediction in predictions:
-            feature_value = prediction[sensitive_feature]
-            if rating == 1 and feature_value not in positive_counts:
-                positive_counts[feature_value] = 0
-            if rating == 1:
-                positive_counts[feature_value] += 1
-        # Calculate the proportion of positive outcomes for each value of the sensitive feature
-        proportions = {}
-        for feature_value, count in positive_counts.items():
-            proportions[feature_value] = count / feature_counts[feature_value]
-
-        # Calculate the absolute unfairness
-        unfairness = 0
-        for feature_value, count in feature_counts.items():
-            unfairness += count * abs(proportions[feature_value] - proportions[next(iter(feature_counts))])
-
-        return unfairness
+        return np.mean(np.abs(np.maximum(0, e_g_r - e_g_y) - np.maximum(0, e_neg_g_r - e_neg_g_y)))
 
     @staticmethod
-    def value_unfairness(predictions, sensitive_feature, outcome_feature):
-        """
-        Calculates value unfairness for a given set of predictions, a sensitive feature, and an outcome feature.
+    def calculate_over_score(predictions: np.array, ratings: np.array, disadvantaged_group: np.array,
+                             advantaged_group: np.array, number_of_items: int):
+        e_g_r, e_g_y, e_neg_g_r, e_neg_g_y = FairnessMethods.calculate_average_values(advantaged_group,
+                                                                                      disadvantaged_group,
+                                                                                      number_of_items, predictions,
+                                                                                      ratings)
 
-        predictions: a list of (user_id, item_id, rating, prediction) tuples
-        sensitive_feature: the name of the sensitive feature (e.g. "gender")
-        outcome_feature: the name of the outcome feature (e.g. "rating")
-
-        returns: value unfairness as a float
-        """
-        # Count the number of predictions for each value of the sensitive feature
-        feature_counts = {}
-        for _, _, _, prediction in predictions:
-            feature_value = prediction[sensitive_feature]
-            if feature_value not in feature_counts:
-                feature_counts[feature_value] = 0
-            feature_counts[feature_value] += 1
-
-        # Count the number of positive outcomes for each value of the sensitive feature
-        value_counts = {}
-        for _, _, rating, prediction in predictions:
-            feature_value = prediction[sensitive_feature]
-            if feature_value not in value_counts:
-                value_counts[feature_value] = 0
-            value_counts[feature_value] += rating
-
-        # Calculate the mean value of the outcome feature for each value of the sensitive feature
-        means = {}
-        for feature_value, count in value_counts.items():
-            means[feature_value] = count / feature_counts[feature_value]
-
-        # Calculate the value unfairness
-        unfairness = 0
-        for feature_value, count in feature_counts.items():
-            unfairness += count * abs(means[feature_value] - means[next(iter(feature_counts))])
-
-        return unfairness
+        return np.mean(np.abs(np.maximum(0, e_g_y - e_g_r) - np.maximum(0, e_neg_g_y - e_neg_g_r)))
 
     @staticmethod
-    def under_unfairness(predictions, sensitive_feature, outcome_feature):
-        """
-        Calculates under-unfairness for a given set of predictions, a sensitive feature, and an outcome feature.
+    def calculate_average_values(advantaged_group, disadvantaged_group, number_of_items, predictions, ratings):
+        e_g_y = np.zeros(number_of_items)
+        e_neg_g_y = np.zeros(number_of_items)
+        e_g_r = np.zeros(number_of_items)
+        e_neg_g_r = np.zeros(number_of_items)
+        for item_pos in range(number_of_items):
+            e_g_y[item_pos] = np.mean(predictions[disadvantaged_group][:, item_pos])
+            e_neg_g_y[item_pos] = np.mean(predictions[advantaged_group][:, item_pos])
+            e_g_r[item_pos] = np.mean(ratings[disadvantaged_group][:, item_pos])
+            e_neg_g_r[item_pos] = np.mean(ratings[advantaged_group][:, item_pos])
+        return e_g_r, e_g_y, e_neg_g_r, e_neg_g_y
 
-        predictions: a list of (user_id, item_id, rating, prediction) tuples
-        sensitive_feature: the name of the sensitive feature (e.g. "gender")
-        outcome_feature: the name of the outcome feature (e.g. "rating")
-
-        returns: under-unfairness as a float
-        """
-        # Count the number of predictions for each value of the sensitive feature
-        feature_counts = {}
-        for _, _, _, prediction in predictions:
-            feature_value = prediction[sensitive_feature]
-            if feature_value not in feature_counts:
-                feature_counts[feature_value] = 0
-            feature_counts[feature_value] += 1
-
-        # Count the number of positive outcomes for each value of the sensitive feature
-        value_counts = {}
-        for _, _, rating, prediction in predictions:
-            feature_value = prediction[sensitive_feature]
-            if feature_value not in value_counts:
-                value_counts[feature_value] = 0
-            if rating >= 1:
-                value_counts[feature_value] += 1
-
-        # Calculate the mean value of the outcome feature for each value of the sensitive feature
-        means = {}
-        for feature_value, count in value_counts.items():
-            means[feature_value] = count / feature_counts[feature_value]
-
-        # Calculate the under-unfairness
-        unfairness = 0
-        for feature_value, count in feature_counts.items():
-            unfairness += count * abs(means[feature_value] - means[next(iter(feature_counts))])
-        return unfairness
+    #
+    # n = len(y_real)
+    # uover = 0
+    # for j in range(n):
+    #     e_g_y = np.mean(y_real[cat_list == True])
+    #     e_g_r = np.mean(y_pred[cat_list == True])
+    #     e_notg_y = np.mean(y_real[cat_list == False])
+    #     e_notg_r = np.mean(y_pred[cat_list == False])
+    #     uover += abs(max(0, e_g_y - e_g_r) - max(0, e_notg_y - e_notg_r))
+    # uover /= n
+    # return uover
 
     @staticmethod
     def over_unfairness(predictions, sensitive_feature, outcome_feature):
@@ -341,8 +225,6 @@ def calculate_under(recommendations_group1, recommendations_group2, similarity_m
 #
 # Sure, here's an example of how you might implement the fairness metric Uval in Python, along with a test function to check that it's working correctly:
 
-import numpy as np
-
 
 def calculate_Uval(y, r, g):
     """
@@ -368,7 +250,6 @@ def test_calculate_Uval():
     assert uval == 0.2
     print("Test passed.")
 
-
 # test_calculate_Uval()
 # This implementation takes as input the predicted ratings y, the observed ratings r, and the binary protected attribute g, and returns the value of the Uval fairness metric.
 # The function test_calculate_Uval() tests the implementation with sample inputs and asserts the output of the function.
@@ -391,28 +272,22 @@ def test_calculate_Uval():
 # Please note that this is just one possible implementation, depending on the specific use case, the implementation may change.
 
 
-import numpy as np
-
-
-def calculate_Uunder(y_g, y_ng, r_g, r_ng, n):
-    Uunder = 0
-    for j in range(n):
-        Uunder += abs(max(0, y_g[j] - r_g[j]) - max(0, y_ng[j] - r_ng[j]))
-    return Uunder / n
-
-
-# test example
-y_g = [1, 0, 1, 0]
-y_ng = [0, 1, 0, 1]
-r_g = [0.8, 0.1, 0.6, 0.2]
-r_ng = [0.9, 0.2, 0.7, 0.3]
-n = len(y_g)
-
-Uunder_val = calculate_Uunder(y_g, y_ng, r_g, r_ng, n)
-print(Uunder_val)
-
-
-
+# def calculate_Uunder(y_g, y_ng, r_g, r_ng, n):
+#     Uunder = 0
+#     for j in range(n):
+#         Uunder += abs(max(0, y_g[j] - r_g[j]) - max(0, y_ng[j] - r_ng[j]))
+#     return Uunder / n
+#
+#
+# # test example
+# y_g = [1, 0, 1, 0]
+# y_ng = [0, 1, 0, 1]
+# r_g = [0.8, 0.1, 0.6, 0.2]
+# r_ng = [0.9, 0.2, 0.7, 0.3]
+# n = len(y_g)
+#
+# Uunder_val = calculate_Uunder(y_g, y_ng, r_g, r_ng, n)
+# print(Uunder_val)
 
 # implement the following metric with a test from the article 'Beyond Parity: Fairness Objectives for Collaborative Filtering ':
 #
@@ -426,25 +301,15 @@ print(Uunder_val)
 # To implement this metric in python, you can use the following code:
 
 
-import numpy as np
-
-def calculate_Uunder(ratings, predictions, sensitive_attributes):
-    n = len(ratings)
-    uunder = 0
-    for j in range(n):
-        e_g_r = np.mean([ratings[i] for i in range(n) if sensitive_attributes[i] == g])
-        e_g_y = np.mean([predictions[i] for i in range(n) if sensitive_attributes[i] == g])
-        e_not_g_r = np.mean([ratings[i] for i in range(n) if sensitive_attributes[i] != g])
-        e_not_g_y = np.mean([predictions[i] for i in range(n) if sensitive_attributes[i] != g])
-        uunder += abs(max(0, e_g_r - e_g_y) - max(0, e_not_g_r - e_not_g_y))
-    uunder = uunder / n
-    return uunder
-
-
 # You can test this function by passing some sample data for the arguments ratings, predictions, and sensitive_attributes, like:
 
 
-ratings = [4, 5, 3, 2, 4, 5, 2, 3, 4, 5]
-predictions = [3.5, 4.5, 2.5, 1.5, 3.5, 4.5, 1.5, 2.5, 3.5, 4.5]
-sensitive_attributes = [0, 0, 1, 1, 0, 0, 1, 1, 0, 0]
-print(calculate_Uunder(ratings, predictions, sensitive_attributes))
+# ratings = [4, 5, 3, 2, 4, 5, 2, 3, 4, 5]
+# predictions = [3.5, 4.5, 2.5, 1.5, 3.5, 4.5, 1.5, 2.5, 3.5, 4.5]
+# sensitive_attributes = [0, 0, 1, 1, 0, 0, 1, 1, 0, 0]
+# print(calculate_Uunder(ratings, predictions, sensitive_attributes))
+
+
+# test the function with some dummy data
+
+# print(calculate_Uover(y, r, g)) # output: 0.3333333
