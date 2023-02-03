@@ -20,7 +20,7 @@ class FairnessMethods(object):
                                                                                       number_of_items, predictions,
                                                                                       ratings)
 
-        return np.mean(np.abs(e_g_y - e_g_r) - np.abs(e_neg_g_y - e_neg_g_r))
+        return np.mean(np.abs(np.abs(e_g_y - e_g_r) - np.abs(e_neg_g_y - e_neg_g_r)))
 
     @staticmethod
     def calculate_under_score(predictions: np.array, ratings: np.array, disadvantaged_group: np.array,
