@@ -55,18 +55,6 @@ class FairnessMethods(object):
             e_neg_g_r[item_pos] = np.mean(ratings[advantaged_group][:, item_pos])
         return e_g_r, e_g_y, e_neg_g_r, e_neg_g_y
 
-    #
-    # n = len(y_real)
-    # uover = 0
-    # for j in range(n):
-    #     e_g_y = np.mean(y_real[cat_list == True])
-    #     e_g_r = np.mean(y_pred[cat_list == True])
-    #     e_notg_y = np.mean(y_real[cat_list == False])
-    #     e_notg_r = np.mean(y_pred[cat_list == False])
-    #     uover += abs(max(0, e_g_y - e_g_r) - max(0, e_notg_y - e_notg_r))
-    # uover /= n
-    # return uover
-
     @staticmethod
     def over_unfairness(predictions, sensitive_feature, outcome_feature):
         """

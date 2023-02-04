@@ -1,8 +1,9 @@
 import unittest
 
-import numpy as np
 from tabulate import tabulate
+
 from fairness_methods.methods import FairnessMethods
+from utils.data_generator import *
 
 
 class MethodTests(unittest.TestCase):
@@ -51,3 +52,20 @@ class MethodTests(unittest.TestCase):
         result = FairnessMethods.calculate_val_score(self.predictions, self.ratings, self.disadvantaged_group,
                                                      self.advantaged_group, self.n)
         assert round(result, 2) == expected, f"Expected {expected} but got {result}"
+
+    def test_synthetic_data(self):
+        L = np.array([[0.8, 0.2, 0.2], [0.8, 0.8, 0.2], [0.2, 0.8, 0.2], [0.2, 0.2, 0.8]])
+        O = np.array([[0.6, 0.2, 0.1], [0.3, 0.4, 0.2], [0.1, 0.3, 0.5], [0.05, 0.5, 0.35]])
+        n_users = 400
+        n_items = 300
+        headers = ["Fem", "STEM", "Masc"]
+        table_L = tabulate(L, headers, tablefmt="fancy_grid")
+        print(table_L)
+        r = generate_synthetic_data(L, O, num_users=n_users, num_items=n_items)
+        assert r.shape == (n_users, n_items), f"Expected shape {(n_users, n_items)}, but got {r.shape}"
+        assert np.abs(np.sum(r == 1) / np.size(r) - np.mean(
+            L * O)) < 0.1, "Expected approximately equal distribution of +1 and -1 ratings."
+
+    def test_real_data(self):
+        r = generate_real_data()
+        print(r.head())
