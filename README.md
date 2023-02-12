@@ -20,12 +20,7 @@ Explanation:
 2. abs_score:
    "measures inconsistency in absolute estimation error across user types"
 
-   $$
-
-   Uabs = 1/n \sum_{j=1}^{n} \left|\left |E_{g}   [y \right ]_{j} - E_{g}  \left [r  \right ]_{j} | - |E_{\neg g}  \left [y \right ]_{j} - E_{\neg g}  \left [r  \right ]_{j} |\right|
-
-
-$$
+$$U_{abs} = \frac{1}{n} \sum_{j=1}^{n} \left| \left|E_{g}[y]{j} - E{g}[r]{j}\right| - \left|E{\neg g}[y]{j} - E{\neg g}[r]_{j}\right| \right|$$
 3. under_score:
    "measures inconsistency in how much the predictions underestimate the true ratings"
 
