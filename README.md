@@ -24,11 +24,11 @@ $$U_{abs} = \frac{1}{n} \sum_{j=1}^{n} \left| \left|E_{g}[y]{j} - E{g}[r]{j}\rig
 3. under_score:
    "measures inconsistency in how much the predictions underestimate the true ratings"
 
-$$U_{under} = \frac{1}{n} \sum_{j=1}^{n} \left| \max \left{0, E_{g}[r]{j} - E{g}[y]{j} \right} - \max \left{0, E{\neg g}[r]{j} - E{\neg g}[y]_{j} \right} \right|$$
+$$U_{under} = \frac{1}{n} \sum_{j=1}^{n} \left| \max \left(0, E_{g}[r]{j} - E{g}[y]{j}\right) - \max \left(0, E{\neg g}[r]{j} - E{\neg g}[y]_{j}\right) \right|$$
 4. over_score:
    "measures inconsistency in how much the predictions overestimate the true ratings"
 
-$$U_{over} = \frac{1}{n} \sum_{j=1}^{n} \left| \max \left{0, E_{g}[y]{j} - E{g}[r]{j} \right} - \max \left{0, E{\neg g}[y]{j} - E{\neg g}[r]_{j} \right} \right|$$
+$$U_{over} = \frac{1}{n} \sum_{j=1}^{n} \left| \max \left(0, E_{g}[y]{j} - E{g}[r]{j}\right) - \max \left(0, E{\neg g}[y]{j} - E{\neg g}[r]_{j}\right) \right|$$
 
 
 ## models
