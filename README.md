@@ -15,7 +15,7 @@ Explanation:
    "measures inconsistency in signed estimation error across the user types"
 
    $$
-   Uval = 1/n \sum_{j=1}^{n} \left |(E_{g}   [y \right ]_{j} - E_{g}  \left [r  \right ]_{j}) - (E_{\neg g}  \left [y \right ]_{j} - E_{\neg g}  \left [r  \right ]_{j})|
+   U_{val} = 1/n \sum_{j=1}^{n} \left |(E_{g}   [y \right ]_{j} - E_{g}  \left [r  \right ]_{j}) - (E_{\neg g}  \left [y \right ]_{j} - E_{\neg g}  \left [r  \right ]_{j})|
    $$
 2. abs_score:
    "measures inconsistency in absolute estimation error across user types"
@@ -24,14 +24,10 @@ $$U_{abs} = \frac{1}{n} \sum_{j=1}^{n} \left| \left|E_{g}[y]{j} - E{g}[r]{j}\rig
 3. under_score:
    "measures inconsistency in how much the predictions underestimate the true ratings"
 
-   $$
-   Uover = 1/n \sum_{j=1}^{n} \left |\max \left \{0,  E_{g}  \left [r \right ]_{j} - E_{g}  \left [y  \right ]_{j}\right \} - \max \left \{0,  E_{\neg g}  \left [r \right ]_{j} - E_{\neg g}  \left [y  \right ]_{j}\right \} \right |
-   $$
+   $$U_{under} = 1/n \sum_{j=1}^{n} \left |\max \left \{0,  E_{g}  \left [r \right ]_{j} - E_{g}  \left [y  \right ]_{j}\right \} - \max \left \{0,  E_{\neg g}  \left [r \right ]_{j} - E_{\neg g}  \left [y  \right ]_{j}\right \} \right |$$
 4. over_score:
    "measures inconsistency in how much the predictions overestimate the true ratings"
 
-   $$
-   Uover = 1/n \sum_{j=1}^{n} \left |\max \left \{0,  E_{g}  \left [y \right ]_{j} - E_{g}  \left [r  \right ]_{j}\right \} - \max \left \{0,  E_{\neg g}  \left [y \right ]_{j} - E_{\neg g}  \left [r  \right ]_{j}\right \} \right |
-   $$
+   $$U_{over} = 1/n \sum_{j=1}^{n} \left |\max \left \{0,  E_{g}  \left [y \right ]_{j} - E_{g}  \left [r  \right ]_{j}\right \} - \max \left \{0,  E_{\neg g}  \left [y \right ]_{j} - E_{\neg g}  \left [r  \right ]_{j}\right \} \right |$$
 
 ## models
