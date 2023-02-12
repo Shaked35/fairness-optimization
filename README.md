@@ -21,7 +21,7 @@ Explanation:
    "measures inconsistency in absolute estimation error across user types"
 
    $$
-   Uabs = 1/n \sum_{j=1}^{n} \left ||E_{g}   [y \right ]_{j} - E_{g}  \left [r  \right ]_{j}| - |E_{\neg g}  \left [y \right ]_{j} - E_{\neg g}  \left [r  \right ]_{j} ||
+   Uabs = 1/n \sum_{j=1}^{n} |\left |E_{g}   [y \right ]_{j} - E_{g}  \left [r  \right ]_{j}| - |E_{\neg g}  \left [y \right ]_{j} - E_{\neg g}  \left [r  \right ]_{j} ||
    $$
 3. under_score:
    "measures inconsistency in how much the predictions underestimate the true ratings"
