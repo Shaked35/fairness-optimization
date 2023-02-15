@@ -103,11 +103,10 @@ $$
 
 5. **par_score**:
    "measures inconsistency in how much the predictions overestimate the true ratings"-
-   Overestimation unfairness is a relevant concept in situations where providing too many recommendations can be
-   overwhelming for users. In cases where users must spend significant time evaluating each recommended item,
-   overestimation can be especially detrimental, as it essentially wastes the user's time.
-   Therefore, it is important to avoid overestimation in certain contexts. Furthermore, uneven amounts of overestimation
-   can have different effects on different types of users, leading to unequal time costs for each group.
+   Kamishima et al. proposed a non-parity unfairness measure that can be computed using a regularization term. 
+   This measure involves calculating the absolute difference between the average ratings of disadvantaged users and 
+   advantaged users. By comparing the overall average ratings of each group, this measure provides insight into the 
+   extent to which a recommendation system may be unfair in terms of rating predictions.
 
 $$
 U_{par} = \left| E_{g}[y] - E{\neg g}[y] \right|
