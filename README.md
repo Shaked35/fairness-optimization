@@ -43,7 +43,7 @@ Explanation:
 
 ## metrics
 
-1. val_score:
+1. **val_score**:
    "measures inconsistency in signed estimation error across the user types"-
    The concept of value unfairness refers to situations where one group of users consistently receives higher or lower
    recommendations than their actual preferences. If there is an equal balance of overestimation and underestimation,
@@ -58,20 +58,39 @@ U_{val} = 1/n \sum_{j=1}^{n} \left |(E_{g}   [y \right ]_{j} - E_{g} \left [r \r
 \left [y \right ]_{j} - E_{\neg g} \left [r \right ]_{j})|
 $$
 
-2. abs_score:
-   "measures inconsistency in absolute estimation error across user types"
+2. **abs_score**:
+   "measures inconsistency in absolute estimation error across user types"-
+   Absolute unfairness is a measure of recommendation quality that is unsigned and provides a single statistic for each
+   user type. It assesses the performance of the recommendation system for each group of users, and if one group
+   has a small reconstruction error while the other group has a large one, then the first group is at an unfair
+   advantage. Unlike value unfairness, absolute unfairness does not take into account the direction of error.
+   For example, if female students are recommended courses that are 0.5 points below their true preferences,
+   and male students are recommended courses that are 0.5 points above their true preferences, there is no
+   absolute unfairness. However, if female students are recommended courses that are off by 2 points in either
+   direction, while male students are recommended courses within 1 point of their true preferences, then absolute
+   unfairness is high, even if value unfairness is low.
 
 $$U_{abs} = \frac{1}{n} \sum_{j=1}^{n} \left| \left|E_{g}[y]{j} - E{g}[r]{j}\right| - \left|E{\neg g}[y]{j} - E{\neg
 g}[r]_{j}\right| \right|$$
 
-3. under_score:
-   "measures inconsistency in how much the predictions underestimate the true ratings"
+3. **under_score**:
+   "measures inconsistency in how much the predictions underestimate the true ratings"-
+   The concept of underestimation unfairness is particularly relevant in situations where it is more important to avoid
+   missing relevant recommendations than to provide additional recommendations. In cases where a highly capable
+   student may not be recommended a course or subject in which they would excel,
+   underestimation can have a significant impact. Therefore, the avoidance of underestimation can be considered a
+   critical objective for recommendation systems in certain contexts.
 
 $$U_{under} = \frac{1}{n} \sum_{j=1}^{n} \left| \max \left(0, E_{g}[r]{j} - E{g}[y]{j}\right) - \max \left(0, E{\neg
 g}[r]{j} - E{\neg g}[y]_{j}\right) \right|$$
 
-4. over_score:
-   "measures inconsistency in how much the predictions overestimate the true ratings"
+4. **over_score**:
+   "measures inconsistency in how much the predictions overestimate the true ratings"-
+   Overestimation unfairness is a relevant concept in situations where providing too many recommendations can be
+   overwhelming for users. In cases where users must spend significant time evaluating each recommended item,
+   overestimation can be especially detrimental, as it essentially wastes the user's time.
+   Therefore, it is important to avoid overestimation in certain contexts. Furthermore, uneven amounts of overestimation
+   can have different effects on different types of users, leading to unequal time costs for each group.
 
 $$U_{over} = \frac{1}{n} \sum_{j=1}^{n} \left| \max \left(0, E_{g}[y]{j} - E{g}[r]{j}\right) - \max \left(0, E{\neg
 g}[y]{j} - E{\neg g}[r]_{j}\right) \right|$$
