@@ -17,7 +17,7 @@ fairness_metrics.py: This file contains the implementation of the four new fairn
 [models](models): This file contains the implementation of the new recommender system models that use
 fairness-optimization.
 
-[methods.py](fairness_methods%2Fmethods.py).py: This file contains the code for each fairness metrics from the article.
+[methods.py](fairness_methods%2Fmethods.py): This file contains the code for each fairness metrics from the article.
 
 [article_recovery.ipynb](article_recovery.ipynb): This jupyter notebook recovery the article results on movieLen data &
 synthetic data.
@@ -102,7 +102,6 @@ g}[y]{j} - E{\neg g}[r]_{j}\right) \right|
 $$
 
 5. **par_score**:
-   "measures inconsistency in how much the predictions overestimate the true ratings"-
    Kamishima et al. proposed a non-parity unfairness measure that can be computed using a regularization term. 
    This measure involves calculating the absolute difference between the average ratings of disadvantaged users and 
    advantaged users. By comparing the overall average ratings of each group, this measure provides insight into the 
