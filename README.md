@@ -102,9 +102,9 @@ g}[y]{j} - E{\neg g}[r]_{j}\right) \right|
 $$
 
 5. **par_score**:
-   Kamishima et al. proposed a non-parity unfairness measure that can be computed using a regularization term. 
-   This measure involves calculating the absolute difference between the average ratings of disadvantaged users and 
-   advantaged users. By comparing the overall average ratings of each group, this measure provides insight into the 
+   Kamishima et al. proposed a non-parity unfairness measure that can be computed using a regularization term.
+   This measure involves calculating the absolute difference between the average ratings of disadvantaged users and
+   advantaged users. By comparing the overall average ratings of each group, this measure provides insight into the
    extent to which a recommendation system may be unfair in terms of rating predictions.
 
 $$
