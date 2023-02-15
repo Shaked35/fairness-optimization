@@ -70,8 +70,10 @@ $$
    direction, while male students are recommended courses within 1 point of their true preferences, then absolute
    unfairness is high, even if value unfairness is low.
 
-$$U_{abs} = \frac{1}{n} \sum_{j=1}^{n} \left| \left|E_{g}[y]{j} - E{g}[r]{j}\right| - \left|E{\neg g}[y]{j} - E{\neg
-g}[r]_{j}\right| \right|$$
+$$
+U_{abs} = \frac{1}{n} \sum_{j=1}^{n} \left| \left|E_{g}[y]{j} - E{g}[r]{j}\right| - \left|E{\neg g}[y]{j} - E{\neg
+g}[r]_{j}\right| \right|
+$$
 
 3. **under_score**:
    "measures inconsistency in how much the predictions underestimate the true ratings"-
@@ -81,8 +83,10 @@ g}[r]_{j}\right| \right|$$
    underestimation can have a significant impact. Therefore, the avoidance of underestimation can be considered a
    critical objective for recommendation systems in certain contexts.
 
-$$U_{under} = \frac{1}{n} \sum_{j=1}^{n} \left| \max \left(0, E_{g}[r]{j} - E{g}[y]{j}\right) - \max \left(0, E{\neg
-g}[r]{j} - E{\neg g}[y]_{j}\right) \right|$$
+$$
+U_{under} = \frac{1}{n} \sum_{j=1}^{n} \left| \max \left(0, E_{g}[r]{j} - E{g}[y]{j}\right) - \max \left(0, E{\neg
+g}[r]{j} - E{\neg g}[y]_{j}\right) \right|
+$$
 
 4. **over_score**:
    "measures inconsistency in how much the predictions overestimate the true ratings"-
@@ -92,7 +96,21 @@ g}[r]{j} - E{\neg g}[y]_{j}\right) \right|$$
    Therefore, it is important to avoid overestimation in certain contexts. Furthermore, uneven amounts of overestimation
    can have different effects on different types of users, leading to unequal time costs for each group.
 
-$$U_{over} = \frac{1}{n} \sum_{j=1}^{n} \left| \max \left(0, E_{g}[y]{j} - E{g}[r]{j}\right) - \max \left(0, E{\neg
-g}[y]{j} - E{\neg g}[r]_{j}\right) \right|$$
+$$
+U_{over} = \frac{1}{n} \sum_{j=1}^{n} \left| \max \left(0, E_{g}[y]{j} - E{g}[r]{j}\right) - \max \left(0, E{\neg
+g}[y]{j} - E{\neg g}[r]_{j}\right) \right|
+$$
+
+5. **par_score**:
+   "measures inconsistency in how much the predictions overestimate the true ratings"-
+   Overestimation unfairness is a relevant concept in situations where providing too many recommendations can be
+   overwhelming for users. In cases where users must spend significant time evaluating each recommended item,
+   overestimation can be especially detrimental, as it essentially wastes the user's time.
+   Therefore, it is important to avoid overestimation in certain contexts. Furthermore, uneven amounts of overestimation
+   can have different effects on different types of users, leading to unequal time costs for each group.
+
+$$
+U_{par} = \left| E_{g}[y] - E{\neg g}[y] \right|
+$$
 
 ## models

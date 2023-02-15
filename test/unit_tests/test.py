@@ -54,6 +54,12 @@ class MethodTests(unittest.TestCase):
                                                      self.advantaged_group, self.n)
         assert round(result, 2) == expected, f"Expected {expected} but got {result}"
 
+    def test_par(self):
+        expected = 0.49
+        result = FairnessMethods.calculate_non_parity_score(self.predictions, self.disadvantaged_group,
+                                                            self.advantaged_group)
+        assert round(result, 2) == expected, f"Expected {expected} but got {result}"
+
     def test_synthetic_data(self):
         L = np.array([[0.8, 0.2, 0.2], [0.8, 0.8, 0.2], [0.2, 0.8, 0.2], [0.2, 0.2, 0.8]])
         O = np.array([[0.6, 0.2, 0.1], [0.3, 0.4, 0.2], [0.1, 0.3, 0.5], [0.05, 0.5, 0.35]])

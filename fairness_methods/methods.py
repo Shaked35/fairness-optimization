@@ -60,13 +60,12 @@ class FairnessMethods(object):
                                                         ratings, func)
 
     @staticmethod
-    def calculate_non_parity_score(predictions: np.array, ratings: np.array, disadvantaged_group: np.array,
-                                   advantaged_group: np.array, number_of_items: int):
-        _, e_g_y, _, e_neg_g_y = FairnessMethods.calculate_average_values(advantaged_group,
-                                                                          disadvantaged_group,
-                                                                          number_of_items, predictions,
-                                                                          ratings)
+    def calculate_non_parity_score(predictions: np.array, disadvantaged_group: np.array,
+                                   advantaged_group: np.array):
+        e_g_y = np.nanmean(predictions[disadvantaged_group])
+        e_neg_g_y = np.nanmean(predictions[advantaged_group])
         return np.abs(e_g_y - e_neg_g_y)
+
 
     @staticmethod
     def calculate_error_score():
