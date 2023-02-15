@@ -4,6 +4,7 @@ from tabulate import tabulate
 
 from fairness_methods.methods import FairnessMethods
 from utils.data_generator import *
+from utils.util import agg_by_gender_and_genres
 
 
 class MethodTests(unittest.TestCase):
@@ -68,4 +69,5 @@ class MethodTests(unittest.TestCase):
 
     def test_real_data(self):
         r = generate_real_data()
+        romance_count, romance_avg_count = agg_by_gender_and_genres(r, 'Romance')
         print(r.head())
