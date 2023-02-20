@@ -45,3 +45,34 @@ def random_k_fold_split(input_df: pd.DataFrame, k: int, test_ratio: float = 0.2)
         k_folders.append(
             (input_df[input_df.index.isin(train_users)], input_df[input_df.index.isin(test_users)]))
     return k_folders
+
+
+class MatrixFactorizationWithObservations:
+    def __init__(self, num_users, num_items, num_factors=10, lr=0.01, reg=0.01, num_iters=10):
+        self.num_users = num_users
+        self.num_items = num_items
+        self.num_factors = num_factors
+        self.lr = lr
+        self.reg = reg
+        self.num_iters = num_iters
+
+    def train(self, train_data, observations):
+        # Initialize user and item latent factor matrices
+        self.user_factors = np.random.normal(scale=1./self.num_factors, size=(self.num_users, self.num_factors))
+        self.item_factors = np.random.normal(scale=1./self.num_factors, size=(self.num_items, self.num_factors))
+
+        # Update the user and item factors iteratively using gradient descent
+        for i in range(self.num_iters):
+            for user_id, item_id, rating, obs in zip(*train_data, *observations):
+                # Compute the prediction error
+                error = rating - self.predict(user_id, item_id)
+
+                # Update the user and item factors
+                obs_weight = obs + 1  # add 1 to convert observation (0 or 1) to weight (1 or 2)
+                self.user_factors[user_id, :] += self.lr * (error * obs_weight * self.item_factors[item_id, :] - self.reg * self.user_factors[user_id, :])
+                self.item_factors[item_id, :] += self.lr * (error * obs_weight * self.user_factors[user_id, :] - self.reg * self.item_factors[item_id, :])
+
+    def predict(self, user_id, item_id):
+        return np.dot(self.user_factors[user_id, :], self.item_factors[item_id, :])
+
+

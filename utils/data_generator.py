@@ -1,25 +1,92 @@
 import os.path
 import shutil
 import urllib.request
-import zipfile
-
-import pandas as pd
 
 import numpy as np
-import requests
+import pandas as pd
+from tabulate import tabulate
+
 from utils.consts import *
 
 
-def generate_synthetic_data(L, O, num_users, num_items):
-    r = np.zeros((num_users, num_items))
+def generate_synthetic_data(observation_model, user_distribution, num_users=NUM_USERS, num_items=NUM_ITEMS):
+    # Define the block-model parameters for rating probability
+    L = np.array([[0.8, 0.2, 0.2],
+                  [0.8, 0.8, 0.2],
+                  [0.2, 0.8, 0.8],
+                  [0.2, 0.2, 0.8]])
+    rating_probability = tabulate(pd.DataFrame(L, columns=ITEM_GROUPS, index=USER_GROUPS),
+                                  ITEM_GROUPS, tablefmt="fancy_grid", showindex=True)
+
+    # Define the block-model parameters for observation probability
+    # observation_model is 'unbalanced'
+    O = np.array([[0.6, 0.2, 0.1],
+                  [0.3, 0.4, 0.2],
+                  [0.1, 0.3, 0.5],
+                  [0.05, 0.5, 0.35]])
+    if observation_model == 'uniform':
+        O = np.full((len(USER_GROUPS), len(ITEM_GROUPS)), 0.4)
+
+    observation_probability = tabulate(pd.DataFrame(O, columns=ITEM_GROUPS, index=USER_GROUPS),
+                                       ITEM_GROUPS, tablefmt="fancy_grid", showindex=True)
+    print("****************************rating probability****************************\n")
+    print(rating_probability)
+    print("****************************observation probability****************************\n")
+    print(observation_probability)
+    # Define the user group distribution
+    # user_distribution is 'biased'
+    num_users_per_group = int(num_users / len(USER_GROUPS))
+    user_group_dist = [num_users_per_group] * len(USER_GROUPS)
+    if user_distribution == 'imbalanced':
+        # where 0.4 of the population is in W, 0.1 in WS, 0.4 in MS, and 0.1 in M
+        user_group_dist = [int(0.4 * num_users), int(0.1 * num_users), int(0.4 * num_users), int(0.1 * num_users)]
+
+    # Generate user and item ids
+    user_ids = np.repeat(np.arange(len(USER_GROUPS)), user_group_dist)
+    item_ids = np.tile(np.arange(len(ITEM_GROUPS)), int(num_items / len(ITEM_GROUPS)))
+
+    # Shuffle the user and item ids
+    np.random.shuffle(user_ids)
+    np.random.shuffle(item_ids)
+
+    # Generate preference and observation data based on the block models
+    preference = np.zeros((num_users, num_items))
+    observations = np.zeros((num_users, num_items))
+    user_gender_rows = []
     for i in range(num_users):
+        user_type = user_ids[i]
+        user_gender = "M" if user_type < 2 else "F"
+        user_gender_rows.append({"user_id": i, "gender": user_gender})
         for j in range(num_items):
-            r_ij = np.random.binomial(1, L[i % L.shape[0], j % L.shape[1]])
-            if np.random.binomial(1, O[i % O.shape[0], j % O.shape[1]]) == 1:
-                r[i, j] = r_ij
-            else:
-                r[i, j] = -1
-    return r
+            prob_rating = L[user_type, item_ids[j]]
+            rating = np.random.choice([-1, 1], p=[1 - prob_rating, prob_rating])
+            preference[i, j] = rating
+
+            prob_observation = O[user_type, item_ids[j]]
+            observation = np.random.choice([0, 1], p=[1 - prob_observation, prob_observation])
+            observations[i, j] = observation
+
+    # combine preference with observations and set scores
+    ratings = preference.copy()
+    ratings = 2 * ratings - 1
+    ratings[observations == 0] = 0
+
+    # ratings[ratings == 1] = 5
+    # ratings[ratings == -1] = 1
+    # convert np matrix to pandas dataframe with 3 column 'user_id', 'item_id', 'rating'
+    users = np.repeat(np.arange(ratings.shape[0]), len(ratings.flatten()) / len(np.arange(ratings.shape[0])))
+    items = np.tile(np.arange(ratings.shape[1]), int(len(ratings.flatten()) / len(np.arange(ratings.shape[1]))))
+    ratings_scores = ratings.flatten()
+    ratings_df = pd.DataFrame()
+    ratings_df["rating"] = ratings_scores
+    ratings_df["user_id"] = users.astype(int)
+    ratings_df["item_id"] = items.astype(int)
+    # ratings_df = ratings_df[ratings_df["rating"] > 0]
+    user_gender_df = pd.DataFrame(user_gender_rows)
+    user_gender_df["user_id"] = user_gender_df["user_id"].astype(int)
+    ratings_df = ratings_df.merge(user_gender_df, on=["user_id"], how="left")
+    item_id_to_group = {index: group for index, group in enumerate(item_ids)}
+    return ratings_df, item_id_to_group
 
 
 def get_one_hot_encoding_genres(genres):
