@@ -23,7 +23,8 @@ class BasicMatrixFactorization:
         self.lambda_ = lambda_
         self.alpha = alpha
         self.n_epochs = epochs
-        print(f"init model with n_users={n_users}, n_items={n_items}, n_user_groups={n_user_groups}")
+        print(f"init model with n_users={n_users}, n_items={n_items}, n_user_groups={n_user_groups}, "
+              f"n_items_groups={n_items_groups}")
 
     def fit(self, train_data, group_user, group_item):
         self.group_user = group_user
@@ -36,7 +37,7 @@ class BasicMatrixFactorization:
         self.group_users = np.random.normal(scale=1. / self.n_factors, size=(self.n_user_groups, self.n_factors))
         self.group_items = np.random.normal(scale=1. / self.n_factors, size=(self.n_items_groups, self.n_factors))
         matrix = coo_matrix(train_data)
-        for epoch in range(self.n_epochs):
+        for epoch in range(1, self.n_epochs + 1):
             for u, i, r in zip(matrix.row, matrix.col, matrix.data):
                 group_u = self.group_user[u]
                 group_i = self.group_item[i]
@@ -49,6 +50,8 @@ class BasicMatrixFactorization:
                         err * self.group_items[group_i, :] - self.lambda_ * self.group_users[group_u, :])
                 self.group_items[group_i, :] += self.alpha * (
                         err * self.group_users[group_u, :] - self.lambda_ * self.group_items[group_i, :])
+            if epoch % 50 == 0:
+                print("finished {} epochs".format(epoch))
 
     def update_user_item(self, err, i, u, update_user):
         if update_user:
