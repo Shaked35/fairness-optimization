@@ -1,5 +1,4 @@
 import numpy as np
-from numpy import mean
 
 
 class FairnessMethods(object):
@@ -66,8 +65,7 @@ class FairnessMethods(object):
         e_neg_g_y = np.nanmean(predictions[advantaged_group])
         return np.abs(e_g_y - e_neg_g_y)
 
-
     @staticmethod
-    def calculate_error_score():
-        # TODO:
-        return
+    def calculate_error_score(predictions: np.array, ratings: np.array):
+        mse = np.sqrt(np.mean((ratings - predictions) ** 2))
+        return mse

@@ -1,6 +1,7 @@
 import os.path
 
 GENRES = ['Sci-Fi', 'Musical', 'Action', 'Crime', 'Romance']
+WOMEN_GENRES = ['Musical', 'Romance']
 RATING_COLUMNS = ['user_id', 'movie_id', 'rating', 'timestamp']
 DATA_COLS = ['user_id', 'item_id', 'rating', 'timestamp']
 USER_COLS = ['user_id', 'age', 'gender', 'occupation', 'zip code']
@@ -12,6 +13,7 @@ ITEM_COLS = ['movie id', 'movie_title', 'release_date', 'video_release_date', 'I
 DELIMITER = '|'
 MIN_USER_RATED = 50
 NUMBER_OF_TESTS = 5
+NUMBER_OF_SYNTHETIC_TESTS = 10
 ML_URL = "https://files.grouplens.org/datasets/movielens/ml-1m.zip"
 RESOURCE_DIR = "resource"
 DATASET_NAME = "ml-1m"

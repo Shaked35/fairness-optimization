@@ -1,12 +1,8 @@
 import unittest
 
-import tensorflow
-from tabulate import tabulate
-
 from fairness_methods.methods import FairnessMethods
 from models.basic_mf_model import BasicMatrixFactorization
 from utils.data_generator import *
-from utils.util import agg_by_gender_and_genres
 
 
 class MethodTests(unittest.TestCase):

@@ -7,9 +7,20 @@ import pandas as pd
 from tabulate import tabulate
 
 from utils.consts import *
+from utils.util import get_one_hot_encoding_genres
 
 
 def generate_synthetic_data(observation_model, user_distribution, num_users=NUM_USERS, num_items=NUM_ITEMS):
+    """
+    This function generates synthetic data for the given user and item distribution.
+    :param observation_model: uniform or unbalanced observation data
+    :param user_distribution: imbalanced or biased user distribution
+    :param num_users: number of users (rows)
+    :param num_items: number of items (columns)
+    :return:
+    ratings_df -> which contains columns of user_id, item_id and rating
+    item_id_to_group -> map of item id to item type ('Fem', 'STEM', 'Masc')
+    """
     # Define the block-model parameters for rating probability
     L = np.array([[0.8, 0.2, 0.2],
                   [0.8, 0.8, 0.2],
@@ -71,8 +82,6 @@ def generate_synthetic_data(observation_model, user_distribution, num_users=NUM_
     ratings = 2 * ratings - 1
     ratings[observations == 0] = 0
 
-    # ratings[ratings == 1] = 5
-    # ratings[ratings == -1] = 1
     # convert np matrix to pandas dataframe with 3 column 'user_id', 'item_id', 'rating'
     users = np.repeat(np.arange(ratings.shape[0]), len(ratings.flatten()) / len(np.arange(ratings.shape[0])))
     items = np.tile(np.arange(ratings.shape[1]), int(len(ratings.flatten()) / len(np.arange(ratings.shape[1]))))
@@ -81,7 +90,6 @@ def generate_synthetic_data(observation_model, user_distribution, num_users=NUM_
     ratings_df["rating"] = ratings_scores
     ratings_df["user_id"] = users.astype(int)
     ratings_df["item_id"] = items.astype(int)
-    # ratings_df = ratings_df[ratings_df["rating"] > 0]
     user_gender_df = pd.DataFrame(user_gender_rows)
     user_gender_df["user_id"] = user_gender_df["user_id"].astype(int)
     ratings_df = ratings_df.merge(user_gender_df, on=["user_id"], how="left")
@@ -89,11 +97,13 @@ def generate_synthetic_data(observation_model, user_distribution, num_users=NUM_
     return ratings_df, item_id_to_group
 
 
-def get_one_hot_encoding_genres(genres):
-    return [1 if g in genres else 0 for g in GENRES]
-
 
 def generate_real_data():
+    """
+    This method generates new dataset from https://files.grouplens.org/datasets/movielens/ml-1m.zip that
+    contains users ratings on different movies
+    :return: ratings dataframe
+    """
     if not os.path.isfile(ZIP_NAME):
         urllib.request.urlretrieve(ML_URL, ZIP_NAME)
         shutil.unpack_archive(ZIP_NAME, RESOURCE_DIR)
