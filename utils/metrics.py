@@ -25,8 +25,6 @@ class RecommendationSystemMetrics(object):
 
     def RMSE(self, true_array: np.ndarray, pred_array: np.ndarray, lower_bound: int = 1, upper_bound: int = 5):
 
-        true_array, pred_array = self._hendle_edge_cases(true_array, pred_array, lower_bound, upper_bound)
-
         return np.sqrt(np.nanmean((true_array.flatten() - pred_array.flatten()) ** 2))
 
     def MRR(self, df_true, df_pred, lower_bound=1, upper_bound=5, th: int = 3, top_n=5):

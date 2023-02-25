@@ -17,10 +17,14 @@ fairness_metrics.py: This file contains the implementation of the four new fairn
 [models](models): This file contains the implementation of the new recommender system models that use
 fairness-optimization.
 
+[artifacts](artifacts): This directory contains training artifacts (dictionaries with all the training meta-data)
+
 [methods.py](fairness_methods%2Fmethods.py): This file contains the code for each fairness metrics from the article.
 
 [article_recovery.ipynb](article_recovery.ipynb): This jupyter notebook recovery the article results on movieLen data &
 synthetic data.
+
+[models.ipynb](models.ipynb): This jupyter notebook contains the models pre-process and running
 
 To use this repository, you can download or clone it to your local machine.
 The recommended way to run the code is to create a virtual environment using Python 3.9 or higher.
@@ -133,3 +137,13 @@ In the article ["Beyond Parity:Fairness Objectives for Collaborative Filtering"]
    ![image.png](assets/real_data1.png)
 
 ## models
+
+1. **GMF**:
+Model architecture:
+Flatten users and items vectors as input 
+2 embedding laters ( size is hyperparam)
+Element wise product
+Relu activation
+
+2.**NeuMF**
+
