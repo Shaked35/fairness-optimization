@@ -111,4 +111,25 @@ $$
 U_{par} = \left| E_{g}[y] - E{\neg g}[y] \right|
 $$
 
+## Article Experiments
+
+In the article ["Beyond Parity:Fairness Objectives for Collaborative Filtering"] we can found few experiments that divide to 2 different data type:
+
+1. **Syntetic Data**
+
+   In this study, we evaluate different unfairness metrics using standard matrix factorization under various sampling conditions. We conduct five random trials and report the average scores in Fig. 1. The settings are labeled as U (uniform user groups and observation probabilities), O (uniform user groups and biased observation probabilities), P (biased user group populations and uniform observations), and B (biased populations and observations).
+
+   The statistics indicate that different forms of underrepresentation contribute to various types of unfairness. Uniform data is the most fair, biased observations is more fair, biased populations is worse, and biasing populations and observations is the most unfair, except for non-parity which is heavily amplified by biased observations but unaffected by biased populations. A high non-parity score does not necessarily indicate unfairness due to the expected imbalance in labeled ratings. The other unfairness metrics describe unfair behavior by the rating predictor. These tests show that unfairness can occur even when the ratings accurately represent user preferences, due to imbalanced populations or observations.![image.png](assets/image.png?t=1677684725051)
+
+
+![img.png](assets/synthetic_data2.png)
+2. **Real Data**
+
+   The study uses the Movielens Million Dataset, consisting of ratings by 6,040 users of 3,883 movies, annotated with demographic variables and genres. The study selects genres that exhibit gender imbalance and considers only users who rated at least 50 of these movies. After filtering, the dataset has 2,953 users and 1,006 movies. The study conducts five trials and evaluates each metric on the testing set. Results show that optimizing each unfairness metric leads to the best performance on that metric without a significant change in reconstruction error. Optimizing value unfairness leads to the most decrease in under- and overestimation, while optimizing non-parity leads to an increase or no change in almost all other unfairness metrics.
+
+   ![image.png](assets/real_data2.png)
+
+
+   ![image.png](assets/real_data1.png)
+
 ## models

@@ -1,5 +1,7 @@
 import unittest
 
+import tensorflow
+
 from fairness_methods.methods import FairnessMethods
 from models.basic_mf_model import BasicMatrixFactorization
 from utils.data_generator import *
@@ -111,15 +113,31 @@ class MethodTests(unittest.TestCase):
         # Check that the observation values are either 0 or 1
         assert np.all(np.isin(observations, [0, 1]))
 
+    @staticmethod
+    def get_next_batch(train_data, batch_size):
+        np.random.shuffle(train_data)
+        for i in range(0, len(train_data), batch_size):
+            batch_data = train_data[i:i + batch_size]
+            inputs = batch_data[:, :2]  # extract user and item indices
+            labels = batch_data[:, 2:]  # extract ratings
+            yield inputs, labels
+
     def test_model(self):
         # Generate sample data
         n_users = 10
         n_items = 6
         n_groups = 2
+        num_epochs = 10
+        batch_size = 28
         X = np.random.randint(1, 5, size=(n_users, n_items))
         group_user = np.random.randint(0, 2, size=n_users)
         group_item = np.random.randint(0, 2, size=n_items)
+        model = BasicMatrixFactorization(n_users, n_items, n_factors=20, reg=0.01, learning_rate=0.001, beta1=0.9,
+                                         beta2=0.999)
 
+        model.fit(X, num_epochs, batch_size)
+        pred = model.predictions()
+        print(pred)
         # Train the model
         mf = BasicMatrixFactorization(n_users, n_items, n_groups, n_factors=2, lambda_=0.1, alpha=0.01, epochs=50)
         mf.fit(X, group_user, group_item)
