@@ -1,3 +1,4 @@
+import random
 import unittest
 
 import tensorflow
@@ -77,9 +78,9 @@ class MethodTests(unittest.TestCase):
         table_L = tabulate(L, headers, tablefmt="fancy_grid")
         print(table_L)
         r = generate_synthetic_data(L, O, num_users=n_users, num_items=n_items)
-        assert r.shape == (n_users, n_items), f"Expected shape {(n_users, n_items)}, but got {r.shape}"
-        assert np.abs(np.sum(r == 1) / np.size(r) - np.mean(
-            L * O)) < 0.1, "Expected approximately equal distribution of +1 and -1 ratings."
+        assert len(r[0]) == n_users * n_items, f"Expected shape {(n_users, n_items)}, but got {r.shape}"
+        assert np.abs(np.sum(r[0]["rating"] == 1) / len(r[0]) - np.mean(
+            L * O)) < 0.1, "Expected approximately equal distribution of +1 and -3 ratings."
 
     def test_generate_synthetic_data(self):
         # Set random seed for reproducibility
@@ -127,23 +128,15 @@ class MethodTests(unittest.TestCase):
         n_users = 10
         n_items = 6
         n_groups = 2
-        num_epochs = 10
-        batch_size = 28
         X = np.random.randint(1, 5, size=(n_users, n_items))
-        group_user = np.random.randint(0, 2, size=n_users)
-        group_item = np.random.randint(0, 2, size=n_items)
-        model = BasicMatrixFactorization(n_users, n_items, n_factors=20, reg=0.01, learning_rate=0.001, beta1=0.9,
-                                         beta2=0.999)
+        group_user = {id: random.randint(0, n_groups - 1) for id in range(n_users)}
+        group_item = {id: random.randint(0, n_groups - 1) for id in range(n_items)}
+        model = BasicMatrixFactorization(n_users, n_items, n_factors=2)
+        x1 = np.repeat(np.arange(X.shape[0]), len(X.flatten()) / len(np.arange(X.shape[0])))
+        x2 = np.tile(np.arange(X.shape[1]), int(len(X.flatten()) / len(np.arange(X.shape[1]))))
+        x3 = X.flatten()
 
-        model.fit(X, num_epochs, batch_size)
+        train_data = pd.DataFrame(np.array([x1, x2, x3]).T, columns=['X', 'Y', 'Z'])
+        model.fit(X, group_user, group_item)
         pred = model.predictions()
-        print(pred)
-        # Train the model
-        mf = BasicMatrixFactorization(n_users, n_items, n_groups, n_factors=2, lambda_=0.1, alpha=0.01, epochs=50)
-        mf.fit(X, group_user, group_item)
-
-        # Make predictions for user 0 and item 1
-        group_u = group_user[0]
-        group_i = group_item[1]
-        pred = mf.predict(0, 1, group_u, group_i)
-        print("Prediction for user 0 and item 1:", pred)
+        assert pred.shape == (n_users, n_items)
