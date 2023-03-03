@@ -17,10 +17,13 @@ fairness_metrics.py: This file contains the implementation of the four new fairn
 [models](models): This file contains the implementation of the new recommender system models that use
 fairness-optimization.
 
+[artifacts](artifacts): This directory contains training artifacts (dictionaries with all the training meta-data)
+
 [methods.py](fairness_methods%2Fmethods.py): This file contains the code for each fairness metrics from the article.
 
 [article_recovery.ipynb](article_recovery.ipynb): This jupyter notebook recovery the article results on movieLen data &
 synthetic data.
+
 
 To use this repository, you can download or clone it to your local machine.
 The recommended way to run the code is to create a virtual environment using Python 3.9 or higher.
@@ -133,3 +136,48 @@ In the article ["Beyond Parity:Fairness Objectives for Collaborative Filtering"]
    ![image.png](assets/real_data1.png)
 
 ## models
+
+1. **basif MF**:
+It assumes a set of users and items, where each user has a variable representing their group, and each item has a variable representing its group. 
+The preference score of each user for each item is represented by the entries in a rating matrix. The matrix-factorization learning algorithm seeks to learn the parameters from observed ratings by minimizing a regularized, 
+squared reconstruction error. The algorithm uses the Adam optimizer, which combines adaptive learning rates with momentum, to minimize the non-convex objective.
+
+2. **GMF**:
+Model architecture:
+Flatten users and items vectors as input 
+2 embedding laters ( size is hyperparam)
+Element wise product
+Relu activation
+
+![img_1.png](assets/img_1.png)
+
+3. **NeuMF**:
+Input Layer: Flatten users and items vectors as input
+Embedding Layer: The embedding layer maps the user and item to latent space.
+Multi-Layer Perceptron : The MLP takes the embeddings as input and passes them through several fc layers with non-linear activation functions.
+Matrix Factorization: calculates the inner product of the user and item embeddings and produces a single output.
+Output Layer: relu activation
+
+![img.png](assets/img.png)
+
+
+## Hyperparam tuning 
+param optimiaztion using random search:
+![img_1.png](assets/img_2.png)
+
+
+## model results:
+
+
+![img.png](assets/img3.png)
+
+![img.png](assets/img4..png)
+## Final thoughts:
+
+This project examines 3 models using 5 fairness metrics and RMSE as objective & evaluation functions
+In both real and synthetic data, we successfully improve the paper baseline models ( matrix factorization).
+Compared to the NueMF model, the GMF performs better in synthetic and real data (as shown in the final tables).
+Fairness can be improved dramatically without harming RMSE
+
+
+
