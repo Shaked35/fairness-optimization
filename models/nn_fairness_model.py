@@ -5,7 +5,9 @@ from datetime import datetime
 from tensorflow.keras import layers
 from tensorflow.python.ops.numpy_ops import np_config
 from utils.metrics import RecommendationSystemMetrics
-from fairness_methods.methods_tf import FairnessMethods
+from fairness_methods.methods_objective import FairnessMethods
+from fairness_methods.methods import FairnessMethods as FairnessMethodsEval
+
 from tensorflow.keras.layers import Embedding, Input, Dense, Reshape, Flatten, Dropout, Multiply, Concatenate
 
 np_config.enable_numpy_behavior()
@@ -24,7 +26,22 @@ def get_fairness_metric(metric: str = None, pred=None, ratings=None, dis_group=N
         fairness = FairnessMethods().calculate_over_score(pred, ratings, dis_group, adv_group, num_items, smooth=smooth)
     elif metric == 'under_score':
         fairness = FairnessMethods().calculate_under_score(pred, ratings, dis_group, adv_group, num_items, smooth=smooth)
+    elif metric == 'under_score':
+        fairness = FairnessMethods().calculate_under_score(pred, ratings, dis_group, adv_group, num_items, smooth=smooth)
+    elif metric == 'non_parity_score':
+        fairness = FairnessMethods().calculate_non_parity_score(pred, dis_group, adv_group)
+    else:
+        raise NotImplementedError()
     return fairness
+
+
+def eval_fairness(pred=None, ratings=None, dis_group=None, adv_group=None, num_items=None):
+    fair_dict = {}
+    for metric in ['val_score', 'abs_score', 'over_score', 'under_score', 'non_parity_score']:
+        fair_score = get_fairness_metric_eval(metric, pred, ratings, dis_group, adv_group, num_items)
+        fair_dict[metric] = fair_score
+    fair_dict['rmse'] = RecommendationSystemMetrics().RMSE(ratings, pred.numpy())
+    return fair_dict
 
 
 # Define the objective function
@@ -49,8 +66,10 @@ def GMF_model_builder(num_users, num_items, embed_dim):
     item_input = layers.Input(shape=(), dtype=tf.float32, name='item_id')
     user_embed = layers.Embedding(num_users, embed_dim)(user_input)
     item_embed = layers.Embedding(num_items, embed_dim)(item_input)
-    product = tf.multiply(user_embed, item_embed)
-    model = tf.keras.Model(inputs=[user_input, item_input], outputs=product)
+    mul = Multiply()([user_embed, item_embed])
+    predict = Dense(1, activation='relu', name="prediction")(mul)
+    model = tf.keras.Model(inputs=[user_input, item_input], outputs=predict)
+
     model.summary()
     return model
 
@@ -126,12 +145,7 @@ def run_nn_fairness_model(model_type, train_set, test_set, num_epochs, num_users
             # Update the weights
             optimizer.apply_gradients(zip(gradients, model.trainable_variables))
             loss_arr.append(loss.numpy())
-            val_score_mse_loss_arr.append(RecommendationSystemMetrics().RMSE(test_set, pred.numpy()))
             train_score_mse_loss_arr.append(RecommendationSystemMetrics().RMSE(train_set.values, pred.numpy()))
-            train_score_unfair = get_fairness_metric(metric, pred, train_set.values, dis_group, adv_group, num_items, False)
-            if train_score_unfair is not None:
-                train_score_unfair = train_score_unfair.numpy()
-            train_score_unfair_arr.append(train_score_unfair)
 
             print(f"Epoch {epoch}, Loss: {loss.numpy()}")
 
@@ -140,6 +154,9 @@ def run_nn_fairness_model(model_type, train_set, test_set, num_epochs, num_users
                     early_stop_counter += 1
                     if early_stop_counter == early_stop_tol:
                         break
+
+    train_dict_unfair = eval_fairness(pred, train_set.values, dis_group, adv_group, num_items)
+    val_dict_unfair = eval_fairness(pred, test_set, dis_group, adv_group, num_items)
 
     end_time = datetime.now()
     trainig_dict["model_type"] = model_type
@@ -152,9 +169,28 @@ def run_nn_fairness_model(model_type, train_set, test_set, num_epochs, num_users
     trainig_dict["embed_dim"] = embed_dim
     trainig_dict["layers"] = layers
     trainig_dict['model'] = model
-    trainig_dict['val_score_unfair_arr'] = val_score_unfair_arr
-    trainig_dict['val_score_mse_loss_arr'] = val_score_mse_loss_arr
+    trainig_dict['train_dict_unfair'] = train_dict_unfair
     trainig_dict['train_score_mse_loss_arr'] = train_score_mse_loss_arr
-    trainig_dict['train_score_unfair_arr'] = train_score_unfair_arr
+    trainig_dict['val_dict_unfair'] = val_dict_unfair
 
     return trainig_dict
+
+
+def get_fairness_metric_eval(metric: str = None, pred=None, ratings=None, dis_group=None, adv_group=None, num_items=None):
+    if metric is None:
+        fairness = None
+    elif metric == 'val_score':
+        fairness = FairnessMethodsEval().calculate_val_score(pred, ratings, dis_group, adv_group, num_items)
+    elif metric == 'abs_score':
+        fairness = FairnessMethodsEval().calculate_abs_score(pred, ratings, dis_group, adv_group, num_items)
+    elif metric == 'over_score':
+        fairness = FairnessMethodsEval().calculate_over_score(pred, ratings, dis_group, adv_group, num_items)
+    elif metric == 'under_score':
+        fairness = FairnessMethodsEval().calculate_under_score(pred, ratings, dis_group, adv_group, num_items)
+    elif metric == 'under_score':
+        fairness = FairnessMethodsEval().calculate_under_score(pred, ratings, dis_group, adv_group, num_items)
+    elif metric == 'non_parity_score':
+        fairness = FairnessMethodsEval().calculate_non_parity_score(pred, dis_group, adv_group)
+    else:
+        raise NotImplementedError()
+    return fairness

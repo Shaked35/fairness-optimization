@@ -82,13 +82,18 @@ class FairnessMethods(object):
 
     @staticmethod
     def calculate_non_parity_score(predictions: np.array, disadvantaged_group: np.array,
-                                   advantaged_group: np.array):
-        e_g_y = np.nanmean(predictions[disadvantaged_group])
-        e_neg_g_y = np.nanmean(predictions[advantaged_group])
-        return np.abs(e_g_y - e_neg_g_y)
+                                   advantaged_group: np.array, smooth=False):
+        e_g_y = tf.reduce_mean(predictions[disadvantaged_group])
+        e_neg_g_y = tf.reduce_mean(predictions[advantaged_group])
+
+        if smooth is False:
+            return tf.abs(e_g_y - e_neg_g_y)
+        else:
+            return tf.abs(huber_loss(e_g_y, e_neg_g_y))
 
     @staticmethod
     def calculate_error_score(predictions: np.array, ratings: np.array):
+
         inx = ratings > 0
         mse = np.sqrt(np.mean((ratings[inx] - predictions[inx]) ** 2))
         return mse
