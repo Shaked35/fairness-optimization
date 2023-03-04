@@ -149,7 +149,7 @@ Flatten users and items vectors as input
 Element wise product
 Relu activation
 
-![img_1.png](assets/img_1.png)
+![img_1.png](assets/img_4.png)
 
 3. **NeuMF**:
 Input Layer: Flatten users and items vectors as input
@@ -158,20 +158,17 @@ Multi-Layer Perceptron : The MLP takes the embeddings as input and passes them t
 Matrix Factorization: calculates the inner product of the user and item embeddings and produces a single output.
 Output Layer: relu activation
 
-![img.png](assets/img.png)
+![img.png](assets/img_3.png)
 
 
 ## Hyperparam tuning 
 param optimiaztion using random search:
-![img_1.png](assets/img_2.png)
-
-
+![img_1.png](assets/img.png)
 ## model results:
 
+![img_1.png](assets/img_1.png)
 
-![img.png](assets/img3.png)
-
-![img.png](assets/img4..png)
+![img_2.png](assets/img_2.png)
 ## Final thoughts:
 
 This project examines 3 models using 5 fairness metrics and RMSE as objective & evaluation functions
