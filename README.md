@@ -57,8 +57,7 @@ Explanation:
    topics, while female students are not recommended STEM courses even if they are interested in them.
 
 $$
-U_{val} = 1/n \sum_{j=1}^{n} \left |(E_{g}   [y \right ]_{j} - E_{g} \left [r \right ]_{j}) - (E_{\neg g}
-\left [y \right ]_{j} - E_{\neg g} \left [r \right ]_{j})|
+U_{val} = 1/n \sum_{j=1}^{n} \left |(E_{g} [y \right ]{j} - E{g} \left [r \right ]{j}) - (E{\neg g} \left [y \right ]{j} - E{\neg g} \left [r \right ]_{j})|
 $$
 
 2. **abs_score**:
